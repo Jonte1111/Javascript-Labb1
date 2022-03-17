@@ -8,11 +8,14 @@ let oGameData = {
     
 };
 
+
+
 /**
  * Initerar det globala objektet med de attribut som ni skall använda er av.
  * Funktionen tar inte emot några värden.
  * Funktionen returnerar inte något värde.
  */
+
 oGameData.initGlobalObject = function() {
 
     //Datastruktur för vilka platser som är lediga respektive har brickor
@@ -23,7 +26,7 @@ oGameData.initGlobalObject = function() {
     //oGameData.gameField = Array('X', '', '', 'X', '', '', 'X', '', '');
     //oGameData.gameField = Array('X', '', '', '', 'X', '', '', '', 'X');
     //oGameData.gameField = Array('', '', 'X', '', 'X', '', 'X', '', '');
-    oGameData.gameField = Array('X', 'X', 'X', 'O', 'O', 'O', 'X', 'O', 'X');
+    //oGameData.gameField = Array('X', 'O', 'X', '0', 'X', 'O', 'O', 'X', 'O');
 
     //Indikerar tecknet som skall användas för spelare ett.
     oGameData.playerOne = "X";
@@ -53,7 +56,74 @@ oGameData.initGlobalObject = function() {
     oGameData.timerId = null;
 
 }
+document.getElementById("newGame").addEventListener("click", validateForm);
+function addClass() {
+    let element = document.getElementById("gameArea");
+    element.classList.add("d-none");
+}
+function validateForm() {
+    
+    let fel = document.getElementById("errorMsg");
+    let nickName1 = document.getElementById("nick1");
+    let nickName2 = document.getElementById("nick2");
+    let colorP1 = document.getElementById("color1");
+    let colorP2 = document.getElementById("color2");
+    let white = '#ffffff';
+    let black = '#000000';
+    try {
+        if(nickName1.value === nickName2.value) throw "Samma namn";
+        if(nickName1.value.length < 4) throw "Namn måste vara 5 eller fler tecken";
+        if(nickName2.value.length < 4) throw "Namn måste vara 5 eller fler tecken";
+        if(colorP1.value === colorP2.value) throw "Måste vara olika färger";
+        if(colorP1.value === white || colorP2.value === white) throw "Kan inte vara vit";
+        if(colorP1.value === black || colorP2.value === black) throw "Kan inte vara svart";
+        initiateGame();
+    }catch(err) {
+        fel.innerHTML = err;
+    }
+}
+function initiateGame() {
+    let formular = document.getElementById("divInForm");
+    let spelplan = document.getElementById("gameArea");
+    spelplan.classList.remove("d-none");
+    formular.classList.add("d-none");
+    let fel = document.getElementById("errorMsg");
+    fel.innerHTML = "";
+    oGameData.nickNamePlayerOne = document.getElementById("nick1");
+    oGameData.nickNamePlayerTwo = document.getElementById("nick2");
+    oGameData.colorPlayerOne = document.getElementById("color1");
+    oGameData.colorPlayerTwo = document.getElementById("color2");
+    console.log(oGameData.nickNamePlayerOne.value);
+    console.log(oGameData.nickNamePlayerTwo.value);
+    console.log(oGameData.colorPlayerOne.value);
+    console.log(oGameData.colorPlayerTwo.value);
+    let planLista = document.querySelectorAll('td');
+    for(let i = 0; i < planLista.length; i++) { //Loopar igenom en lista av alla 'td' element och tar bort text plus sätter bakgrundsfärgen till vit
+        planLista[i].textContent = "";
+        planLista[i].style.backgroundColor = "white";
+        console.log(planLista[i]);
+    }
+    let playerChar;
+    let playerName;
 
+    let random = Math.random();
+    console.log(random);
+
+    if(random < 0.5) {
+        playerChar = oGameData.playerOne;
+        playerName = oGameData.nickNamePlayerOne.value;
+        oGameData.currentPlayer = oGameData.playerOne;
+        
+    }
+    else {
+        playerChar = oGameData.playerTwo;
+        playerName = oGameData.nickNamePlayerTwo.value;
+        oGameData.currentPlayer = oGameData.playerTwo;
+        
+    }
+    let jumbo = document.querySelector("h1"); //Tar det första h1 elementet i klassen jumbotron
+    jumbo.innerHTML = "Aktuell spelare är "+ playerName + " " + oGameData.currentPlayer;
+}
 /**
  * Kontrollerar för tre i rad.
  * Returnerar 0 om det inte är någon vinnare, 
@@ -137,10 +207,10 @@ let d = checkDiagonal();
          return 2;
      }
      else if(h === 0 && v === 0 && d === 0) {
-         return 0;
+         return 3;
      }
      else {
-         return 3;
+         return 0;
      }
  }
 return checkWin();
